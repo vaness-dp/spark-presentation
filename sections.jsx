@@ -1,0 +1,947 @@
+// SPARK — Section components
+
+const { useState, useEffect, useRef } = React;
+
+// ============================================
+// Icon helpers
+// ============================================
+const Icon = {
+  Check: (p) =>
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" {...p}>
+      <path d="M5 12l4.5 4.5L19 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>,
+
+  X: (p) =>
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" {...p}>
+      <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>,
+
+  Arrow: (p) =>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="arrow" {...p}>
+      <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>,
+
+  Tg: (p) =>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" {...p}>
+      <path d="M21.4 4.3L2.8 11.2c-1.3.5-1.3 1.2-.2 1.5l4.7 1.5 1.8 5.6c.2.5.4.7.8.7.4 0 .6-.2.8-.5l2.5-2.4 5 3.7c.9.5 1.6.2 1.9-.9l3.4-15.7c.4-1.5-.4-2.2-1.5-1.7zm-3.2 4.3l-9.3 8.5-.4 4-1.9-5.6 11.3-7.1c.5-.3 1 .1.8.5z" />
+    </svg>,
+
+  Download: (p) =>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" {...p}>
+      <path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>,
+
+  Spark: (p) =>
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" {...p}>
+      <path d="M12 2v6M12 16v6M2 12h6M16 12h6M5 5l4 4M15 15l4 4M5 19l4-4M15 9l4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+
+};
+
+// Brand mark — refined 4-point spark with concave edges (gem/sparkle silhouette)
+function SparkMark({ size = 22 }) {
+  return (
+    <svg
+      className="spark-mark"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      aria-hidden="true">
+      
+      <path
+        d="M12 0.5 C12 7 13 12 23.5 12 C13 12 12 17 12 23.5 C12 17 11 12 0.5 12 C11 12 12 7 12 0.5 Z"
+        fill="currentColor" />
+      
+    </svg>);
+
+}
+
+// ============================================
+// MODAL — Privacy / Terms
+// ============================================
+function Modal({ open, onClose, title, children }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => {if (e.key === "Escape") onClose();};
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+        <div className="modal-head">
+          <h3 className="modal-title">{title}</h3>
+          <button className="modal-close" onClick={onClose} aria-label="Закрыть">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+        <div className="modal-body">{children}</div>
+      </div>
+    </div>);
+
+}
+
+function PrivacyContent() {
+  return (
+    <>
+      <p className="modal-eff">Дата вступления в&nbsp;силу: 1&nbsp;мая 2026&nbsp;г.</p>
+      <p>Spark («мы», «сервис») уважает вашу конфиденциальность. Настоящая политика объясняет, какие данные мы собираем, как используем и&nbsp;защищаем их.</p>
+
+      <h4>Какие данные мы&nbsp;собираем</h4>
+      <p>При использовании бота мы получаем от&nbsp;Telegram: ваш user_id, имя пользователя (username), имя. В&nbsp;ходе диалога сохраняются ваши текстовые сообщения и&nbsp;ответы AI. При оплате через Telegram Stars — только факт успешной оплаты (реквизиты карты нам не&nbsp;передаются).</p>
+
+      <h4>Как мы&nbsp;используем данные</h4>
+      <p>Исключительно для предоставления сервиса: персонализации диалога, хранения прогресса, генерации финального плана. Мы&nbsp;не&nbsp;продаём данные третьим лицам и&nbsp;не&nbsp;используем их для рекламы.</p>
+
+      <h4>Хранение данных</h4>
+      <p>Данные хранятся на&nbsp;защищённых серверах Railway (США&nbsp;/&nbsp;ЕС). История диалога хранится до&nbsp;тех пор, пока вы не&nbsp;сбросите её командой&nbsp;/reset или не&nbsp;запросите удаление.</p>
+
+      <h4>Ваши права</h4>
+      <p>Вы вправе запросить удаление всех ваших данных в&nbsp;любой момент — напишите нам в&nbsp;поддержку: <a href="https://t.me/krylov_designer" target="_blank" rel="noopener">@krylov_designer</a>. Удаление выполняется в&nbsp;течение 72&nbsp;часов.</p>
+
+      <h4>Контакт</h4>
+      <p>По&nbsp;вопросам конфиденциальности: <a href="https://t.me/krylov_designer" target="_blank" rel="noopener">@krylov_designer</a></p>
+    </>);
+
+}
+
+function TermsContent() {
+  return (
+    <>
+      <p className="modal-eff">Дата вступления в&nbsp;силу: 1&nbsp;мая 2026&nbsp;г.</p>
+
+      <h4>Описание сервиса</h4>
+      <p>Spark&nbsp;— это AI-коучинг сервис в&nbsp;Telegram. Мы&nbsp;предоставляем инструмент для самоанализа и&nbsp;составления персонального плана. Spark не&nbsp;является лицензированным психологом, коучем или консультантом и&nbsp;не&nbsp;несёт ответственности за&nbsp;решения, принятые на&nbsp;основании диалога.</p>
+
+      <h4>Оплата и&nbsp;возврат</h4>
+      <p>Оплата разовая — за&nbsp;доступ к&nbsp;курсу. Возврат возможен в&nbsp;течение 24&nbsp;часов после оплаты, если вы не&nbsp;прошли более 2&nbsp;дней курса. Для возврата обратитесь в&nbsp;поддержку: <a href="https://t.me/krylov_designer" target="_blank" rel="noopener">@krylov_designer</a>.</p>
+
+      <h4>Ограничения</h4>
+      <p>Сервис предназначен для лиц старше 16&nbsp;лет. Запрещено использование в&nbsp;коммерческих целях без согласования с&nbsp;нами.</p>
+
+      <h4>Изменения</h4>
+      <p>Мы&nbsp;вправе изменять условия. При существенных изменениях уведомим через бота.</p>
+    </>);
+
+}
+
+// ============================================
+// NAV
+// ============================================
+function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 30);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const smoothJump = (e, hash) => {
+    e.preventDefault();
+    const el = document.querySelector(hash);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 12;
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
+  return (
+    <nav className={`nav ${scrolled ? "scrolled" : ""}`}>
+      <div className="wrap nav-inner">
+        <a className="brand" href="#top" onClick={(e) => smoothJump(e, "#top")}>
+          <SparkMark />
+          <span className="brand-word">Spark</span>
+        </a>
+        <div className="nav-links">
+          <a href="#problem" onClick={(e) => smoothJump(e, "#problem")}>Почему Spark</a>
+          <a href="#how" onClick={(e) => smoothJump(e, "#how")}>Как работает</a>
+          <a href="#pricing" onClick={(e) => smoothJump(e, "#pricing")}>Цены</a>
+          <a href="#vs" onClick={(e) => smoothJump(e, "#vs")}>Сравнение</a>
+        </div>
+        <a className="btn btn-primary btn-sm" href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
+          <Icon.Tg /> Попробовать
+        </a>
+      </div>
+    </nav>);
+
+}
+
+// ============================================
+// HERO — animated chat
+// ============================================
+const CHAT_SCRIPT = [
+{ who: "bot", text: "Когда ты в последний раз делал что-то и не смотрел на часы?", pause: 2200 },
+{ who: "me", text: "Когда занимался фотографией…", pause: 2400 },
+{ who: "bot", text: "Почему остановился? Что тогда помешало?", pause: 2000 },
+{ who: "me", text: "Казалось — несерьёзно, не заработаешь на этом", pause: 2600 },
+{ who: "bot", text: "А кто тебе это сказал — ты сам или кто-то другой?", pause: 3200 }];
+
+
+function ChatPreview() {
+  const [shown, setShown] = useState([]);
+  const [typing, setTyping] = useState(false);
+  const bodyRef = useRef(null);
+
+  useEffect(() => {
+    let cancel = false;
+    let timers = [];
+    async function run() {
+      while (!cancel) {
+        setShown([]);
+        for (let i = 0; i < CHAT_SCRIPT.length; i++) {
+          if (cancel) return;
+          const msg = CHAT_SCRIPT[i];
+          if (msg.who === "bot") {
+            setTyping(true);
+            await new Promise((r) => timers.push(setTimeout(r, 900)));
+            setTyping(false);
+          }
+          setShown((s) => [...s, msg]);
+          await new Promise((r) => timers.push(setTimeout(r, msg.pause || 1800)));
+        }
+        await new Promise((r) => timers.push(setTimeout(r, 2200)));
+      }
+    }
+    run();
+    return () => {cancel = true;timers.forEach(clearTimeout);};
+  }, []);
+
+  useEffect(() => {
+    if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+  }, [shown, typing]);
+
+  return (
+    <div className="chat-card">
+      <div className="chat-head">
+        <div className="chat-avatar">
+          <SparkMark size={20} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div className="chat-name">Spark</div>
+          <div className="chat-status">в&nbsp;сети</div>
+        </div>
+        <div style={{ display: "flex", gap: 4 }}>
+          <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--muted-soft)" }}></span>
+          <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--muted-soft)" }}></span>
+          <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--muted-soft)" }}></span>
+        </div>
+      </div>
+      <div className="chat-body" ref={bodyRef}>
+        {shown.map((m, i) =>
+        <div key={i} className={`bubble bubble-once ${m.who === "bot" ? "bubble-bot" : "bubble-me"}`}>
+            {m.text}
+          </div>
+        )}
+        {typing &&
+        <div className="bubble bubble-bot typing bubble-once">
+            <span></span><span></span><span></span>
+          </div>
+        }
+      </div>
+    </div>);
+
+}
+
+function Hero() {
+  return (
+    <section className="hero" id="top">
+      <div className="hero-blob"></div>
+      <div className="wrap">
+        <div className="hero-grid">
+          <div>
+            <div className="hero-badge">
+              <span className="badge-spark"><SparkMark size={11} /></span>
+              <span>День&nbsp;1 — бесплатно сегодня</span>
+              <span className="badge-arrow">→</span>
+            </div>
+            <h1 className="hero-title">
+              <span className="word">Найди</span>{" "}
+              <em className="word">своё&nbsp;дело</em>
+              <br />
+              <span className="word">за&nbsp;7&nbsp;дней.</span>
+            </h1>
+            <p className="hero-sub">
+              Не курс и не вебинар. <strong>Живой диалог с&nbsp;AI</strong>, который задаёт правильные вопросы — и&nbsp;помогает найти ответы, что уже живут внутри тебя.
+            </p>
+            <div className="hero-ctas">
+              <a className="btn btn-primary" href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
+                <Icon.Tg className="icon-lead" /> Начать бесплатно <Icon.Arrow />
+              </a>
+              <a className="btn btn-ghost" href="#how">
+                Как это работает
+              </a>
+            </div>
+            <div className="hero-stats">
+              <div className="hero-stat">
+                <div className="hero-stat-num">07</div>
+                <div className="hero-stat-label">дней до результата</div>
+              </div>
+              <div className="hero-stat-divider"></div>
+              <div className="hero-stat">
+                <div className="hero-stat-num">490 ₽</div>
+                <div className="hero-stat-label">базовый · 990₽ Pro</div>
+              </div>
+              <div className="hero-stat-divider"></div>
+              <div className="hero-stat">
+                <div className="hero-stat-num">∞</div>
+                <div className="hero-stat-label">в Telegram, без подписки</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <ChatPreview />
+          </div>
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ============================================
+// PROBLEM
+// ============================================
+const PROBLEMS = [
+{
+  n: "01",
+  h: "«Надо разобраться, но не сейчас»",
+  p: "Годами откладываешь вопрос «чем я хочу заниматься» — потому что не знаешь с чего начать и страшно получить неудобный ответ."
+},
+{
+  n: "02",
+  h: "Коуч за 50 000 ₽ не вариант",
+  p: "Живой коучинг дорогой, редкий и непредсказуемый по качеству. Онлайн-курсы — абстрактные, без обратной связи под твою ситуацию."
+},
+{
+  n: "03",
+  h: "Книги и тесты не работают",
+  p: "Тест на тип личности и пять книг о призвании — ты уже пробовал. Результата нет, потому что нет живого диалога под тебя."
+},
+{
+  n: "04",
+  h: "ChatGPT даёт советы, а не вопросы",
+  p: "Обычный AI говорит что делать. Spark задаёт вопросы, которые заставляют думать самого — именно это и меняет направление."
+}];
+
+
+function Problem() {
+  return (
+    <section className="section section-warm" id="problem">
+      <div className="wrap">
+        <div className="section-head reveal">
+          <span className="eyebrow">Проблема</span>
+          <h2 className="section-title">
+            Ты уже знаешь&nbsp;ответы.<br />
+            <em>Просто не слышишь себя.</em>
+          </h2>
+        </div>
+        <div className="problem-grid">
+          {PROBLEMS.map((p, i) =>
+          <div key={i} className="problem-card reveal-card" data-delay={i + 1}>
+              <div className="problem-num">{p.n}</div>
+              <h3>{p.h}</h3>
+              <p>{p.p}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ============================================
+// HOW IT WORKS — interactive stepper
+// ============================================
+const DAYS = [
+{
+  n: 1,
+  t: "Кто ты сейчас",
+  d: "Точка отсчёта. Что есть, что не устраивает.",
+  chat: [
+  { who: "bot", text: "Где ты сейчас находишься? Не на карте — в жизни." },
+  { who: "me", text: "Работа норм, но топчусь на месте." },
+  { who: "bot", text: "А какой день недели обычно кажется потерянным?" },
+  { who: "me", text: "Вторник. Пять часов на встречах ни о чём." }]
+
+},
+{
+  n: 2,
+  t: "Ценности",
+  d: "Что важно на самом деле — без шаблонов.",
+  chat: [
+  { who: "bot", text: "Три вещи, без которых ты — не ты?" },
+  { who: "me", text: "Свобода, честность, рост." },
+  { who: "bot", text: "Когда в последний раз каждая из них была на месте?" },
+  { who: "me", text: "Свобода — давно. Месяца три как." }]
+
+},
+{
+  n: 3,
+  t: "Сильные стороны",
+  d: "Что даётся легко и что недооцениваешь.",
+  chat: [
+  { who: "bot", text: "К тебе приходят за советом — за каким?" },
+  { who: "me", text: "Когда надо разобраться в хаосе." },
+  { who: "bot", text: "Это твой дар. Что ты с ним делаешь сейчас?" },
+  { who: "me", text: "Ничего. В резюме это не впишешь." }]
+
+},
+{
+  n: 4,
+  t: "Страхи и блоки",
+  d: "Что мешает двигаться и откуда это.",
+  chat: [
+  { who: "bot", text: "Что ты НЕ делаешь, хотя хочется?" },
+  { who: "me", text: "Не пишу. Стыдно." },
+  { who: "bot", text: "Стыдно перед кем — конкретно?" },
+  { who: "me", text: "Перед бывшими коллегами, наверное." }]
+
+},
+{
+  n: 5,
+  t: "Желания",
+  d: "Чего хочется по-настоящему.",
+  chat: [
+  { who: "bot", text: "Если бы никто не узнал — чем бы занялся?" },
+  { who: "me", text: "Делал бы короткие видео." },
+  { who: "bot", text: "О чём?" },
+  { who: "me", text: "О том, как находить смысл там, где его не ждёшь." }]
+
+},
+{
+  n: 6,
+  t: "Ресурсы",
+  d: "Время, навыки, связи, возможности.",
+  chat: [
+  { who: "bot", text: "Назови трёх людей, которые скажут «давай», если позвонишь сегодня." },
+  { who: "me", text: "Аня. Серёжа. Брат." },
+  { who: "bot", text: "С кем заговоришь первым? Что скажешь?" },
+  { who: "me", text: "Серёже. Что хочу попробовать." }]
+
+},
+{
+  n: 7,
+  t: "Твой план",
+  d: "Конкретные шаги на 30 дней.",
+  chat: [
+  { who: "bot", text: "Собираю всё, что ты рассказал за 6 дней…" },
+  { who: "bot", text: "Твоё дело: видео о смысле и саморазвитии." },
+  { who: "bot", text: "Первый шаг — 1 короткое видео в неделю. 30 дней. Без редактуры." },
+  { who: "sys", text: "📄 plan_30days.txt · готов к скачиванию" }]
+
+}];
+
+
+function DayChat({ day }) {
+  return (
+    <div className="day-chat">
+      <div className="chat-head">
+        <div className="chat-avatar"><SparkMark size={20} /></div>
+        <div style={{ flex: 1 }}>
+          <div className="chat-name">Spark</div>
+          <div className="chat-status">в&nbsp;сети</div>
+        </div>
+        <div className="day-chat-badge">День&nbsp;{day.n}</div>
+      </div>
+      <div className="day-chat-body">
+        {day.chat.map((m, i) =>
+        m.who === "sys" ?
+        <div key={i} className="bubble-sys" style={{ animationDelay: `${0.15 + i * 0.18}s` }}>
+              <Icon.Download style={{ width: 14, height: 14 }} /> {m.text.replace(/^📄 /, "")}
+            </div> :
+
+        <div
+          key={i}
+          className={`bubble ${m.who === "bot" ? "bubble-bot" : "bubble-me"}`}
+          style={{ animationDelay: `${0.15 + i * 0.18}s` }}>
+          
+              {m.text}
+            </div>
+
+        )}
+      </div>
+    </div>);
+
+}
+
+function HowItWorks() {
+  const [active, setActive] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const sectionRef = useRef(null);
+  const targetRef = useRef(0);
+  const targetProgressRef = useRef(0);
+
+  // Scroll listener — only updates targets
+  useEffect(() => {
+    let raf = null;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        const sec = sectionRef.current;
+        if (!sec) return;
+        const rect = sec.getBoundingClientRect();
+        const sectionH = sec.offsetHeight;
+        const viewportH = window.innerHeight;
+        const scrolled = Math.max(0, -rect.top);
+        const scrollable = sectionH - viewportH;
+        const p = scrollable > 0 ? Math.min(1, scrolled / scrollable) : 0;
+        targetProgressRef.current = p;
+        targetRef.current = p * (DAYS.length - 1);
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // RAF lerp loop — smoothly catches up to scroll target
+  useEffect(() => {
+    let raf;
+    let cancelled = false;
+    let curActive = 0;
+    let curProgress = 0;
+    const tick = () => {
+      if (cancelled) return;
+      curActive = curActive + (targetRef.current - curActive) * 0.12;
+      curProgress = curProgress + (targetProgressRef.current - curProgress) * 0.14;
+      const idx = Math.max(0, Math.min(DAYS.length - 1, Math.round(curActive)));
+      setActive((prev) => prev !== idx ? idx : prev);
+      setProgress(curProgress);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {cancelled = true;if (raf) cancelAnimationFrame(raf);};
+  }, []);
+
+  const day = DAYS[active];
+
+  return (
+    <>
+      <section ref={sectionRef} className="how-section section-deep" id="how">
+        <div className="how-sticky">
+          <div className="wrap how-wrap">
+            <div className="how-head">
+              <span className="eyebrow">Как работает</span>
+              <h2 className="section-title how-title">
+                7 дней. 7 разговоров.&nbsp;
+                <em>Один результат.</em>
+              </h2>
+            </div>
+
+            <div className="how-progress" role="tablist">
+              <div className="how-progress-line">
+                <div className="how-progress-fill" style={{ width: `${progress * 100}%` }} />
+              </div>
+              <div className="how-progress-cells">
+                {DAYS.map((d, i) =>
+                <button
+                  key={i}
+                  type="button"
+                  role="tab"
+                  aria-selected={i === active}
+                  className={`prog-cell ${i <= active ? "on" : ""} ${i === active ? "active" : ""}`}
+                  onClick={() => {
+                    const sec = sectionRef.current;
+                    if (!sec) return;
+                    const target = sec.offsetTop + (i + 0.4) / DAYS.length * (sec.offsetHeight - window.innerHeight);
+                    window.scrollTo({ top: target, behavior: "smooth" });
+                  }}>
+                  
+                    <span className="prog-num">{String(d.n).padStart(2, "0")}</span>
+                    <span className="prog-dot"></span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="how-stage">
+              <div className="how-stage-info" key={active}>
+                <div className="day-big-num">{String(day.n).padStart(2, "0")}</div>
+                <div className="day-text">
+                  <div className="day-eyebrow">День {day.n} · из 7</div>
+                  <h3 className="day-h">{day.t}</h3>
+                  <p className="day-p">{day.d}</p>
+                  <div className="day-pill">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+                      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+                      <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    </svg>
+                    5-10 минут · 6 вопросов
+                  </div>
+                </div>
+              </div>
+              <DayChat day={day} key={"chat-" + active} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section section-warm result-section">
+        <div className="wrap">
+          <div className="result-card reveal">
+            <div className="result-icon">
+              <Icon.Download style={{ color: "white", width: 32, height: 32 }} />
+            </div>
+            <div>
+              <h3>В&nbsp;конце — готовый файл&nbsp;с&nbsp;персональным планом</h3>
+              <p>Скачай в&nbsp;.txt, сохрани, возвращайся. Не&nbsp;абстрактные советы — конкретный путь, собранный из&nbsp;твоих собственных ответов.</p>
+            </div>
+            <div className="file-pill">
+              <Icon.Download style={{ width: 14, height: 14 }} /> plan_30days.txt
+            </div>
+          </div>
+        </div>
+      </section>
+    </>);
+
+}
+
+const FeatureIcons = {
+  // Russian language — speech with "Аа" letterform feel
+  ru:
+  <svg viewBox="0 0 32 32" fill="none">
+      <path d="M5 8a5 5 0 0 1 5-5h12a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5h-7l-6 5v-5h-4a5 5 0 0 1-5-5V8Z"
+    stroke="currentColor" strokeWidth="1.5" />
+      <path d="M11 17l3-8h0l3 8M12.5 14.5h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="22" cy="13" r="1.4" fill="currentColor" />
+    </svg>,
+
+  // Structure — 7 stacked lines, varying length (like a plan/outline)
+  structure:
+  <svg viewBox="0 0 32 32" fill="none">
+      <path d="M6 7h20M6 11h16M6 15h20M6 19h13M6 23h17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="6" cy="15" r="2" fill="currentColor" opacity="0.18" />
+      <path d="M6 15l2 2 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>,
+
+  // Result file — doc with download arrow
+  file:
+  <svg viewBox="0 0 32 32" fill="none">
+      <path d="M9 3h9l7 7v17a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M18 3v6a1 1 0 0 0 1 1h6" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M16 16v8m0 0l-3-3m3 3l3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>,
+
+  // Time — clock at 15 past
+  clock:
+  <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="16" r="11.5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M16 9v7l5 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="16" cy="16" r="1.4" fill="currentColor" />
+    </svg>,
+
+  // Free — gift box with ribbon
+  gift:
+  <svg viewBox="0 0 32 32" fill="none">
+      <rect x="4.5" y="11" width="23" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M16 11v16M4.5 17h23" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M16 11s-5-1-5-4.5C11 5 12.5 4 14 4c2 0 2 3 2 7Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M16 11s5-1 5-4.5C21 5 19.5 4 18 4c-2 0-2 3-2 7Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    </svg>,
+
+  // Telegram — refined paper plane
+  telegram:
+  <svg viewBox="0 0 32 32" fill="none">
+      <path d="M28 5L4 14.5a.6.6 0 0 0 .05 1.13l5.95 1.92 2.6 7.95a.6.6 0 0 0 1 .25l3.6-3.6 6.4 4.65a.6.6 0 0 0 .94-.36L29 5.85A.6.6 0 0 0 28 5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M10 17.5L22 9l-9 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+
+};
+
+// ============================================
+// FEATURES
+// ============================================
+const FEATURES = [
+{ icon: FeatureIcons.ru, h: "На русском языке", p: "Все диалоги, промпты и итоговый план — на русском. Нюансы, которые теряются в переводе, здесь сохранены." },
+{ icon: FeatureIcons.structure, h: "Структура, а не хаос", p: "Семь чётких тем, каждая строится на предыдущей. Есть начало и есть конец — ты знаешь куда идёшь." },
+{ icon: FeatureIcons.file, h: "Результат в руках", p: "В конце ты получаешь файл, а не просто «ощущение разговора». Конкретный план, который можно перечитать." },
+{ icon: FeatureIcons.clock, h: "10–15 минут в день", p: "Не надо выделять час. Одна сессия в удобное время — утром в транспорте или вечером перед сном." },
+{ icon: FeatureIcons.gift, h: "Первый шаг — бесплатно", p: "День 1 всегда бесплатно. Почувствуй ценность до того, как тратить деньги. Никакого риска, никакой карты." },
+{ icon: FeatureIcons.telegram, h: "Прямо в Telegram", p: "Никакой регистрации, приложений и паролей. Просто пишешь как другу — в любое время, в любом месте." }];
+
+
+function Features() {
+  return (
+    <section className="section" id="features">
+      <div className="wrap">
+        <div className="section-head reveal">
+          <span className="eyebrow">Почему Spark</span>
+          <h2 className="section-title">
+            Не как все&nbsp;<em>остальные.</em>
+          </h2>
+        </div>
+        <div className="features-grid">
+          {FEATURES.map((f, i) =>
+          <div key={i} className="feature reveal-card" data-delay={i % 3 + 1}>
+              <div className="feature-icon">{f.icon}</div>
+              <h3>{f.h}</h3>
+              <p>{f.p}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ============================================
+// PRICING
+// ============================================
+const TRACKS = [
+{ name: "Найти своё дело", note: "основной трек", icon: "compass" },
+{ name: "Деньги и карьера", note: "доход и рост", icon: "growth" },
+{ name: "Отношения", note: "партнёрство и близость", icon: "hearts" },
+{ name: "Здоровье", note: "энергия и режим", icon: "pulse" }];
+
+
+const TrackIcon = {
+  compass:
+  <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M15.5 8.5l-2 5-5 2 2-5 5-2Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>,
+
+  growth:
+  <svg viewBox="0 0 24 24" fill="none">
+      <path d="M4 20l5-5 4 4 7-9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 10h6v6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>,
+
+  hearts:
+  <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>,
+
+  pulse:
+  <svg viewBox="0 0 24 24" fill="none">
+      <path d="M3 12h4l2-5 4 10 2-5h6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+
+};
+
+const TIERS = [
+{
+  name: "Старт",
+  price: "0",
+  suffix: "₽",
+  desc: "День 1 — всегда бесплатно",
+  cta: "Начать бесплатно",
+  features: [
+  { on: true, t: "День 1 в полном объёме" },
+  { on: true, t: "Диалог с AI-коучем" },
+  { on: false, t: "Дни 2–7 и финальный план" },
+  { on: false, t: "Скачать план в .txt" }]
+
+},
+{
+  name: "Базовый",
+  price: "490",
+  suffix: "₽",
+  desc: "Полный курс — все 7 дней",
+  cta: "Купить доступ",
+  features: [
+  { on: true, t: "Все 7 дней без ограничений" },
+  { on: true, t: "Финальный план на 30 дней" },
+  { on: true, t: "Скачать план в .txt" },
+  { on: false, t: "Голосовые + все 4 трека" }]
+
+},
+{
+  name: "Pro",
+  price: "990",
+  suffix: "₽",
+  desc: "Всё включено — без ограничений",
+  cta: "Выбрать Pro",
+  featured: true,
+  tag: "Популярный",
+  features: [
+  { on: true, t: "Финальный план на 90 дней" },
+  { on: true, t: "Голосовые сообщения" },
+  { on: true, t: "Безлимитные циклы · check-in" }],
+
+  tracks: TRACKS
+}];
+
+
+function Pricing() {
+  return (
+    <section className="section section-warm" id="pricing">
+      <div className="wrap">
+        <div className="section-head reveal">
+          <span className="eyebrow">Цены</span>
+          <h2 className="section-title">
+            Прозрачно. <em>Без подписок.</em>
+          </h2>
+        </div>
+        <div className="pricing-grid">
+          {TIERS.map((t, i) =>
+          <div key={i} className={`tier ${t.featured ? "tier-featured" : ""} reveal-card`} data-delay={i + 1}>
+              {t.tag && <div className="tier-tag">{t.tag}</div>}
+              <div className="tier-name">{t.name}</div>
+              <div className="price-row">
+                <span className="price-num">{t.price}</span>
+                <span className="price-suffix">{t.suffix}</span>
+              </div>
+              <div className="tier-desc">{t.desc}</div>
+              <ul className="tier-features">
+                {t.features.map((f, j) =>
+              <li key={j} className={f.on ? "" : "off"}>
+                    {f.on ? <Icon.Check className="check" /> : <Icon.X className="x" />}
+                    <span>{f.t}</span>
+                  </li>
+              )}
+              </ul>
+              {t.tracks &&
+            <div className="tracks-block">
+                  <div className="tracks-head">
+                    <span className="tracks-eyebrow">4 трека внутри</span>
+                  </div>
+                  <div className="tracks-list">
+                    {t.tracks.map((tr, k) =>
+                <div key={k} className="track-row">
+                        <div className="track-icon">{TrackIcon[tr.icon]}</div>
+                        <div className="track-text">
+                          <div className="track-name">{tr.name}</div>
+                          <div className="track-note">{tr.note}</div>
+                        </div>
+                      </div>
+                )}
+                  </div>
+                </div>
+            }
+              <a className={`btn ${t.featured ? "btn-accent" : "btn-primary"}`}
+            href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
+                {t.cta} <Icon.Arrow />
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ============================================
+// COMPARE
+// ============================================
+const COMPARE_ROWS = [
+["На русском языке", "✓", "✓", "частично"],
+["Персональный диалог", "✓", "✓", "✗"],
+["Доступно 24 / 7", "✓", "✗", "✓"],
+["Конкретный план в конце", "✓", "иногда", "✗"],
+["Первый шаг бесплатно", "✓", "✗", "✗"],
+["Цена", "от 490 ₽", "50 000+ ₽", "5 000+ ₽"]];
+
+
+function Compare() {
+  return (
+    <section className="section" id="vs">
+      <div className="wrap">
+        <div className="section-head reveal">
+          <span className="eyebrow">Сравнение</span>
+          <h2 className="section-title">
+            Spark против <em>альтернатив.</em>
+          </h2>
+        </div>
+        <div className="compare-table reveal">
+          <div className="compare-row compare-head">
+            <div className="compare-cell"></div>
+            <div className="compare-cell spark">Spark</div>
+            <div className="compare-cell">Живой коуч</div>
+            <div className="compare-cell">Онлайн-курс</div>
+          </div>
+          {COMPARE_ROWS.map((row, i) =>
+          <div key={i} className="compare-row compare-row-reveal" style={{ transitionDelay: `${0.08 + i * 0.07}s` }}>
+              <div className="compare-cell label">{row[0]}</div>
+              <div className="compare-cell spark-cell">{row[1]}</div>
+              <div className="compare-cell">{row[2]}</div>
+              <div className="compare-cell">{row[3]}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ============================================
+// FINAL CTA
+// ============================================
+function FinalCTA() {
+  return (
+    <section className="final">
+      <div className="wrap final-content reveal">
+        <span className="eyebrow" style={{ justifyContent: "center" }}>Начни сегодня</span>
+        <h2 style={{ marginTop: 24 }}>
+          7 дней — и&nbsp;ты знаешь<br />
+          <em>куда идти.</em>
+        </h2>
+        <p>День 1 бесплатно. Без регистрации. Просто открой бота и ответь на первый вопрос.</p>
+        <div className="final-ctas">
+          <a className="btn btn-primary" href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
+            <Icon.Tg /> Начать бесплатно в Telegram <Icon.Arrow />
+          </a>
+        </div>
+        <div className="final-foot">490 ₽ — полный доступ на 7 дней · СБП или Telegram Stars</div>
+      </div>
+    </section>);
+
+}
+
+// ============================================
+// FOOTER
+// ============================================
+function Footer({ onOpenModal }) {
+  return (
+    <footer className="footer">
+      <div className="wrap">
+        <div className="footer-grid">
+          <div>
+            <div className="footer-brand">
+              <SparkMark size={32} />
+              <span className="brand-word footer-brand-word">Spark</span>
+            </div>
+            <p>AI-коучинг в Telegram. Найди своё дело за 7 дней.</p>
+          </div>
+          <div>
+            <h4>Продукт</h4>
+            <div className="footer-links">
+              <a href="#how">Как работает</a>
+              <a href="#pricing">Цены</a>
+              <a href="#vs">Сравнение</a>
+              <a href="#features">Почему Spark</a>
+            </div>
+          </div>
+          <div>
+            <h4>Начать</h4>
+            <p style={{ marginBottom: 18 }}>День 1 — бесплатно. Без регистрации и карты.</p>
+            <a className="btn btn-primary btn-sm" href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
+              <Icon.Tg className="icon-lead" /> Открыть в Telegram
+            </a>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <span>© 2026 Spark. Все права защищены.</span>
+          <span className="footer-legal">
+            <button className="link-btn" onClick={() => onOpenModal("privacy")}>Политика конфиденциальности</button>
+            <button className="link-btn" onClick={() => onOpenModal("terms")}>Условия использования</button>
+            <a href="https://t.me/krylov_designer" target="_blank" rel="noopener">Поддержка</a>
+          </span>
+        </div>
+      </div>
+    </footer>);
+
+}
+
+// expose
+Object.assign(window, { Nav, Hero, Problem, HowItWorks, Features, Pricing, Compare, FinalCTA, Footer, Modal, PrivacyContent, TermsContent, DAYS, CHAT_SCRIPT, DayChat, ChatPreview, SparkMark, Icon, FeatureIcons });

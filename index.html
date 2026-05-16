@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spark — Найди своё дело за 7 дней</title>
+  <link rel="stylesheet" href="styles.css?v=9" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="sections.jsx"></script>
+
+  <script type="text/babel">
+    const { useEffect } = React;
+
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "accent": "#c96442",
+      "fontPair": "dm-sans"
+    }/*EDITMODE-END*/;
+
+    const FONT_PAIRS = {
+      "dm-sans":  { sans: '"DM Sans", system-ui, sans-serif',           label: "DM Sans" },
+      "manrope":  { sans: '"Manrope", system-ui, sans-serif',           label: "Manrope" },
+      "jakarta":  { sans: '"Plus Jakarta Sans", system-ui, sans-serif', label: "Jakarta" },
+      "geist":    { sans: '"Geist", system-ui, sans-serif',             label: "Geist" }
+    };
+
+    function ensureFont(family) {
+      if (document.querySelector(`link[data-font="${family}"]`)) return;
+      const l = document.createElement("link");
+      l.rel = "stylesheet";
+      l.dataset.font = family;
+      const map = {
+        "Manrope": "Manrope:wght@300;400;500;600;700",
+        "Plus Jakarta Sans": "Plus+Jakarta+Sans:wght@300;400;500;600;700",
+        "Geist": "Geist:wght@300;400;500;600;700",
+        "DM Sans": "DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700"
+      };
+      if (!map[family]) return;
+      l.href = `https://fonts.googleapis.com/css2?family=${map[family]}&display=swap`;
+      document.head.appendChild(l);
+    }
+
+    function App() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+      const [modal, setModal] = React.useState(null);
+
+      // Apply accent live
+      useEffect(() => {
+        const root = document.documentElement;
+        root.style.setProperty("--accent", t.accent);
+      }, [t.accent]);
+
+      // Apply font pair live
+      useEffect(() => {
+        const pair = FONT_PAIRS[t.fontPair] || FONT_PAIRS["dm-sans"];
+        const family = pair.sans.split(",")[0].replace(/"/g, "").trim();
+        ensureFont(family);
+        document.documentElement.style.setProperty("--font-sans", pair.sans);
+      }, [t.fontPair]);
+
+      // Scroll reveal
+      useEffect(() => {
+        const obs = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add("in");
+                obs.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -60px 0px" }
+        );
+        document.querySelectorAll(".reveal, .reveal-card").forEach((el) => obs.observe(el));
+        // Safety: ensure all reveals become visible within 2.5s even if IO misses
+        const safety = setTimeout(() => {
+          document.querySelectorAll(".reveal:not(.in), .reveal-card:not(.in)").forEach((el) => el.classList.add("in"));
+        }, 2500);
+        return () => { obs.disconnect(); clearTimeout(safety); };
+      }, []);
+
+      return (
+        <>
+          <Nav />
+          <main>
+            <Hero />
+            <Problem />
+            <HowItWorks />
+            <Features />
+            <Pricing />
+            <Compare />
+            <FinalCTA />
+          </main>
+          <Footer onOpenModal={setModal} />
+
+          <Modal open={modal === "privacy"} onClose={() => setModal(null)} title="Политика конфиденциальности">
+            <PrivacyContent />
+          </Modal>
+          <Modal open={modal === "terms"} onClose={() => setModal(null)} title="Условия использования">
+            <TermsContent />
+          </Modal>
+
+          <TweaksPanel title="Tweaks">
+            <TweakSection label="Акцент">
+              <TweakColor
+                label="Цвет"
+                value={t.accent}
+                onChange={(v) => setTweak("accent", v)}
+                options={["#c96442", "#1f6feb", "#0f8a5b", "#7b3aa8", "#1f1e1d"]}
+              />
+            </TweakSection>
+            <TweakSection label="Шрифт">
+              <TweakSelect
+                label="Пара"
+                value={t.fontPair}
+                onChange={(v) => setTweak("fontPair", v)}
+                options={Object.keys(FONT_PAIRS).map(k => ({ value: k, label: FONT_PAIRS[k].label }))}
+              />
+            </TweakSection>
+          </TweaksPanel>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

@@ -194,7 +194,7 @@ function Nav() {
             
             <button className="burger-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Меню">
               <div className={`burger-icon ${menuOpen ? "open" : ""}`}>
-                <span></span><span></span>
+                <span></span><span></span><span></span>
               </div>
             </button>
           </div>
@@ -437,7 +437,7 @@ const DAYS = [
   { who: "bot", text: "Собираю всё, что ты рассказал за 6 дней…" },
   { who: "bot", text: "Твоё дело: видео о смысле и саморазвитии." },
   { who: "bot", text: "Первый шаг — одно короткое видео в неделю. 30 дней. Без редактуры." },
-  { who: "sys", text: "📄 plan_30days.txt · готов к скачиванию" }]
+  { who: "bot", text: "Готов твой план — скачаешь ниже ↓" }]
 
 }];
 
@@ -511,20 +511,25 @@ function HowItWorks() {
     };
   }, []);
 
-  // RAF lerp loop — smoothly catches up to scroll target
+  // RAF lerp loop — smoothly catches up to scroll target.
+  // Skips React updates when already at target to avoid re-render churn.
   useEffect(() => {
     let raf;
     let cancelled = false;
-    let curActive = 0;
-    let curProgress = 0;
+    let curActive = targetRef.current;
+    let curProgress = targetProgressRef.current;
     const tick = () => {
       if (cancelled) return;
       if (window.innerWidth > 768) {
-        curActive = curActive + (targetRef.current - curActive) * 0.12;
-        curProgress = curProgress + (targetProgressRef.current - curProgress) * 0.14;
-        const idx = Math.max(0, Math.min(DAYS.length - 1, Math.round(curActive)));
-        setActive((prev) => prev !== idx ? idx : prev);
-        setProgress(curProgress);
+        const dA = targetRef.current - curActive;
+        const dP = targetProgressRef.current - curProgress;
+        if (Math.abs(dA) > 0.0005 || Math.abs(dP) > 0.0005) {
+          curActive += dA * 0.12;
+          curProgress += dP * 0.14;
+          const idx = Math.max(0, Math.min(DAYS.length - 1, Math.round(curActive)));
+          setActive((prev) => prev !== idx ? idx : prev);
+          setProgress((prev) => Math.abs(prev - curProgress) < 0.0005 ? prev : curProgress);
+        }
       }
       raf = requestAnimationFrame(tick);
     };
@@ -764,24 +769,29 @@ const TrackIcon = {
 
 };
 
+const PLAN_FEATURES = [
+{ key: "day1", label: "День 1 в полном объёме" },
+{ key: "ai", label: "Диалог с AI-коучем" },
+{ key: "full7", label: "Все 7 дней без ограничений" },
+{ key: "plan", label: "Финальный план", variants: { start: null, base: "30 дней", pro: "90 дней" } },
+{ key: "txt", label: "Скачать план в .txt" },
+{ key: "voice", label: "Голосовые сообщения" },
+{ key: "spheres", label: "4 сферы жизни", info: true },
+{ key: "checkin", label: "Еженедельный check-in" }];
+
+
 const TIERS = [
 {
+  key: "start",
   name: "Старт",
   price: "0",
   suffix: "₽",
   desc: "День 1 — всегда бесплатно",
   cta: "Начать бесплатно",
-  features: [
-  { on: true, t: "День 1 в полном объёме" },
-  { on: true, t: "Диалог с AI-коучем" },
-  { on: false, t: "Дни 2–7 и финальный план" },
-  { on: false, t: "Скачать план в .txt" },
-  { on: false, t: "До 3 доп. сессий по 199 ₽" },
-  { on: false, t: "Голосовые сообщения" },
-  { on: false, t: "Все 4 трека и безлимит" },
-  { on: false, t: "План на 90 дней · check-in" }]
+  on: { day1: true, full7: false, ai: true, plan: false, txt: false, voice: false, spheres: false, checkin: false }
 },
 {
+  key: "base",
   name: "Базовый",
   price: "490",
   suffix: "₽",
@@ -789,63 +799,20 @@ const TIERS = [
   cta: "Купить доступ",
   featured: true,
   tag: "Популярный",
-  features: [
-  { on: true, t: "Все 7 дней без ограничений" },
-  { on: true, t: "Диалог с AI-коучем" },
-  { on: true, t: "Финальный план на 30 дней" },
-  { on: true, t: "Скачать план в .txt" },
-  { on: true, t: "До 3 доп. сессий по 199 ₽" },
-  { on: false, t: "Голосовые сообщения" },
-  { on: false, t: "Все 4 трека и безлимит" },
-  { on: false, t: "План на 90 дней · check-in" }]
+  on: { day1: true, full7: true, ai: true, plan: true, txt: true, voice: false, spheres: false, checkin: false }
 },
 {
+  key: "pro",
   name: "Pro",
   price: "990",
   suffix: "₽",
   desc: "Всё включено — без ограничений",
   cta: "Выбрать Pro",
-  features: [
-  { on: true, t: "Все 7 дней без ограничений" },
-  { on: true, t: "Диалог с AI-коучем" },
-  { on: true, t: "Финальный план на 90 дней" },
-  { on: true, t: "Скачать план в .txt" },
-  { on: true, t: "Голосовые сообщения" },
-  { on: true, t: "Безлимитные повторные прохождения" },
-  { on: true, t: "Еженедельный check-in" },
-  { on: true, t: "Приоритетная поддержка" }]
+  on: { day1: true, full7: true, ai: true, plan: true, txt: true, voice: true, spheres: true, checkin: true }
 }];
 
 
-function ProTracksDisclosure() {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className={`tier-tracks-pills ${open ? "is-open" : ""}`}>
-      <button
-        type="button"
-        className="tier-tracks-toggle"
-        aria-expanded={open}
-        onClick={() => setOpen(v => !v)}>
-        <span className="tier-tracks-label">4 сферы жизни</span>
-        <span className="tier-tracks-chevron" aria-hidden="true"></span>
-      </button>
-      <div className="tier-tracks-collapse">
-        <div className="tier-tracks-collapse-inner">
-          <div className="tier-tracks-row">
-            {TRACKS.map((tr, k) =>
-              <div key={k} className="tier-track-pill">
-                <span className="tier-track-icon">{TrackIcon[tr.icon]}</span>
-                <span>{tr.name}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Pricing() {
+function Pricing({ onOpenSpheres }) {
   return (
     <section className="section" id="pricing">
       <div className="wrap">
@@ -866,14 +833,31 @@ function Pricing() {
               </div>
               <div className="tier-desc">{t.desc}</div>
               <ul className="tier-features">
-                {t.features.map((f, j) =>
-              <li key={j} className={f.on ? "" : "off"}>
-                    {f.on ? <Icon.Check className="check" /> : <Icon.X className="x" />}
-                    <span>{f.t}</span>
-                  </li>
-              )}
+                {PLAN_FEATURES.map((f, j) => {
+                  const isOn = t.on[f.key];
+                  const variant = f.variants ? f.variants[t.key] : null;
+                  return (
+                    <li key={j} className={isOn ? "" : "off"}>
+                      {isOn ? <Icon.Check className="check" /> : <Icon.X className="x" />}
+                      <span className="feat-label">
+                        {f.label}{variant && isOn ? <span className="feat-variant"> · {variant}</span> : null}
+                        {f.info && isOn &&
+                          <button
+                            type="button"
+                            className="feat-info"
+                            onClick={onOpenSpheres}
+                            aria-label="Показать 4 сферы жизни">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+                              <path d="M12 11v5M12 8h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                            </svg>
+                          </button>
+                        }
+                      </span>
+                    </li>);
+
+                })}
               </ul>
-              {t.name === "Pro" && <ProTracksDisclosure />}
               <a className={`btn ${t.featured ? "btn-accent" : "btn-primary"}`}
             href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
                 {t.cta} <Icon.Arrow />
@@ -883,6 +867,26 @@ function Pricing() {
         </div>
       </div>
     </section>);
+
+}
+
+function SpheresContent() {
+  return (
+    <>
+      <p className="modal-eff">Доступно только на тарифе Pro</p>
+      <p>Spark разбирает не только карьеру. Pro открывает все 4 сферы — переключайся между ними внутри одного диалога.</p>
+      <div className="spheres-grid">
+        {TRACKS.map((tr, i) =>
+          <div key={i} className="sphere-card">
+            <span className="sphere-icon">{TrackIcon[tr.icon]}</span>
+            <div className="sphere-meta">
+              <h4>{tr.name}</h4>
+              <p>{tr.note}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </>);
 
 }
 
@@ -997,7 +1001,7 @@ function About() {
               Один человек.&nbsp;<em>Не команда.</em>
             </h2>
             <p>
-              Меня зовут Кирилл, я дизайнер. Сам прошёл через
+              Меня зовут Иван, я дизайнер. Сам прошёл через
               «не знаю чем хочу заниматься» — и сделал инструмент,
               который задаёт правильные вопросы, а не даёт готовые советы.
             </p>
@@ -1006,10 +1010,6 @@ function About() {
               <a className="about-inline-link" href="https://t.me/krylov_designer" target="_blank" rel="noopener">пиши в Telegram</a>,
               я отвечу лично.
             </p>
-            <a className="btn btn-primary about-cta" href="https://t.me/krylov_designer"
-               target="_blank" rel="noopener">
-              <Icon.Tg className="icon-lead" /> Написать @krylov_designer <Icon.Arrow />
-            </a>
           </div>
         </div>
       </div>
@@ -1048,8 +1048,85 @@ const FAQ_ITEMS = [
 
 
 function FAQItem({ item, delay, isOpen, onToggle }) {
+  const collapseRef = useRef(null);
+  const innerRef = useRef(null);
+  const itemRef = useRef(null);
+  const isFirstRun = useRef(true);
+  const [isIn, setIsIn] = useState(false);
+
+  // Per-item IntersectionObserver — keeps `in` state in React so re-renders
+  // (e.g. opening/closing) don't clobber the class added externally.
+  useEffect(() => {
+    const el = itemRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setIsIn(true);
+            obs.disconnect();
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -60px 0px" }
+    );
+    obs.observe(el);
+    const safety = setTimeout(() => setIsIn(true), 2500);
+    return () => { obs.disconnect(); clearTimeout(safety); };
+  }, []);
+
+  useEffect(() => {
+    const el = collapseRef.current;
+    const inner = innerRef.current;
+    if (!el || !inner) return;
+
+    // On first render with isOpen=false we just lock the inline style
+    // to "0px" so the next open transitions cleanly.
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      el.style.maxHeight = "0px";
+      if (!isOpen) return;
+    }
+
+    if (isOpen) {
+      // If we're at "none" (fully expanded from before), reset to current
+      // pixel height so the next state change can animate.
+      if (el.style.maxHeight === "none") {
+        el.style.maxHeight = inner.scrollHeight + "px";
+        void el.offsetHeight;
+      }
+      // Force from current to target on the next frame so the browser
+      // commits the "from" value before transitioning.
+      const raf = requestAnimationFrame(() => {
+        el.style.maxHeight = inner.scrollHeight + "px";
+      });
+      const onEnd = (e) => {
+        if (e.target !== el || e.propertyName !== "max-height") return;
+        el.style.maxHeight = "none";
+        el.removeEventListener("transitionend", onEnd);
+      };
+      el.addEventListener("transitionend", onEnd);
+      return () => {
+        cancelAnimationFrame(raf);
+        el.removeEventListener("transitionend", onEnd);
+      };
+    } else {
+      if (el.style.maxHeight === "none") {
+        el.style.maxHeight = inner.scrollHeight + "px";
+        void el.offsetHeight;
+      }
+      const raf = requestAnimationFrame(() => {
+        el.style.maxHeight = "0px";
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [isOpen]);
+
   return (
-    <div className={`faq-item reveal-card ${isOpen ? "is-open" : ""}`} data-delay={delay}>
+    <div
+      ref={itemRef}
+      className={`faq-item reveal-card ${isIn ? "in" : ""} ${isOpen ? "is-open" : ""}`}
+      data-delay={delay}>
       <button
         type="button"
         className="faq-summary"
@@ -1058,8 +1135,8 @@ function FAQItem({ item, delay, isOpen, onToggle }) {
         <span>{item.q}</span>
         <span className="faq-chevron" aria-hidden="true"></span>
       </button>
-      <div className="faq-collapse">
-        <div className="faq-collapse-inner">
+      <div className="faq-collapse" ref={collapseRef}>
+        <div className="faq-collapse-inner" ref={innerRef}>
           <p>{item.a}</p>
         </div>
       </div>
@@ -1103,8 +1180,7 @@ function FinalCTA() {
       <div className="wrap final-content reveal">
         <span className="eyebrow" style={{ justifyContent: "center" }}>Начни сегодня</span>
         <h2 style={{ marginTop: 24 }}>
-          7 дней — и&nbsp;ты знаешь<br />
-          <em>куда идти.</em>
+          7 дней — и&nbsp;ты знаешь <em>куда&nbsp;идти.</em>
         </h2>
         <p>День 1 бесплатно. Без регистрации.</p>
         <div className="final-ctas">
@@ -1112,16 +1188,24 @@ function FinalCTA() {
             <Icon.Tg className="icon-lead" /> Начать бесплатно в Telegram <Icon.Arrow />
           </a>
         </div>
-        <div className="final-trust">
-          <div className="final-trust-item">
-            <span className="final-trust-label">Полный доступ</span>
-            <span className="final-trust-value">490&nbsp;₽ <span className="final-trust-meta">· СБП или Telegram Stars</span></span>
-          </div>
-          <div className="final-trust-divider" aria-hidden="true"></div>
-          <div className="final-trust-item">
-            <span className="final-trust-label">Гарантия возврата</span>
-            <span className="final-trust-value">24&nbsp;ч <span className="final-trust-meta">· если прошёл не больше 2 дней</span></span>
-          </div>
+        <div className="final-meta">
+          <span className="final-meta-pill">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3" y="6" width="18" height="13" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M3 10h18" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M7 15h3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+            490&nbsp;₽ · СБП или Telegram Stars
+          </span>
+          <span className="final-meta-pill">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M3 12a9 9 0 0 1 15.3-6.4L21 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <path d="M21 4v4h-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M21 12a9 9 0 0 1-15.3 6.4L3 16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <path d="M3 20v-4h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Возврат 24&nbsp;ч · если прошло не&nbsp;больше 2&nbsp;дней
+          </span>
         </div>
       </div>
     </section>);
@@ -1175,4 +1259,4 @@ function Footer({ onOpenModal }) {
 }
 
 // expose
-Object.assign(window, { Nav, Hero, Problem, HowItWorks, Features, Testimonials, Pricing, Compare, About, FAQ, FinalCTA, Footer, Modal, PrivacyContent, TermsContent, DAYS, CHAT_SCRIPT, DayChat, ChatPreview, SparkMark, Icon, FeatureIcons });
+Object.assign(window, { Nav, Hero, Problem, HowItWorks, Features, Testimonials, Pricing, Compare, About, FAQ, FinalCTA, Footer, Modal, PrivacyContent, TermsContent, SpheresContent, DAYS, CHAT_SCRIPT, DayChat, ChatPreview, SparkMark, Icon, FeatureIcons });

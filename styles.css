@@ -589,30 +589,23 @@ h1.hero-title .word {
   justify-content: flex-end;
   gap: 10px;
   height: 400px;
-  overflow: hidden;
+  overflow-y: hidden;
   position: relative;
+  scroll-behavior: smooth;
+  padding-bottom: 4px;
 }
 
-/* Soft top fade — older messages don't hard-clip */
+/* Removed glare effect as per user request */
 .chat-body::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 36px;
-  background: linear-gradient(180deg, var(--surface), transparent);
-  pointer-events: none;
-  z-index: 2;
+  display: none;
 }
 
 /* One-time bubble entry for hero (async chat) */
 .bubble-once {
-  animation: bubble-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: bubble-in 0.6s cubic-bezier(0.2, 1.2, 0.3, 1) forwards;
 }
 
 @keyframes bubble-cycle {
-  /* legacy — no longer used */
   0%, 100% { opacity: 1; }
 }
 
@@ -623,13 +616,18 @@ h1.hero-title .word {
   font-size: 14.5px;
   line-height: 1.45;
   opacity: 0;
-  transform: translateY(6px) scale(0.96);
-  animation: bubble-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform: translateY(20px) scale(0.9);
+  animation: bubble-in 0.6s cubic-bezier(0.2, 1.2, 0.3, 1) forwards;
   will-change: transform, opacity;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 }
 
 @keyframes bubble-in {
-  to {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  100% {
     opacity: 1;
     transform: translateY(0) scale(1);
   }

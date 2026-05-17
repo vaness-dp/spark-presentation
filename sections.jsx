@@ -138,14 +138,27 @@ function TermsContent() {
 // ============================================
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Prevent scroll when menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
   const smoothJump = (e, hash) => {
     e.preventDefault();
+    setMenuOpen(false);
     const el = document.querySelector(hash);
     if (!el) return;
     const top = el.getBoundingClientRect().top + window.scrollY - 12;
@@ -153,24 +166,42 @@ function Nav() {
   };
 
   return (
-    <nav className={`nav ${scrolled ? "scrolled" : ""}`}>
-      <div className="wrap nav-inner">
-        <a className="brand" href="#top" onClick={(e) => smoothJump(e, "#top")}>
-          <SparkMark />
-          <span className="brand-word">Spark</span>
-        </a>
-        <div className="nav-links">
-          <a href="#problem" onClick={(e) => smoothJump(e, "#problem")}>Почему Spark</a>
-          <a href="#how" onClick={(e) => smoothJump(e, "#how")}>Как работает</a>
-          <a href="#pricing" onClick={(e) => smoothJump(e, "#pricing")}>Цены</a>
-          <a href="#vs" onClick={(e) => smoothJump(e, "#vs")}>Сравнение</a>
+    <>
+      <nav className={`nav ${scrolled ? "scrolled" : ""} ${menuOpen ? "menu-open" : ""}`}>
+        <div className="wrap nav-inner">
+          <a className="brand" href="#top" onClick={(e) => smoothJump(e, "#top")}>
+            <SparkMark />
+            <span className="brand-word">Spark</span>
+          </a>
+          
+          <div className={`nav-links ${menuOpen ? "open" : ""}`}>
+            <a href="#problem" onClick={(e) => smoothJump(e, "#problem")}>Почему Spark</a>
+            <a href="#how" onClick={(e) => smoothJump(e, "#how")}>Как работает</a>
+            <a href="#pricing" onClick={(e) => smoothJump(e, "#pricing")}>Цены</a>
+            <a href="#vs" onClick={(e) => smoothJump(e, "#vs")}>Сравнение</a>
+            
+            {/* Mobile only CTA inside menu */}
+            <a className="btn btn-primary nav-mobile-cta" href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
+              <Icon.Tg /> Начать бесплатно
+            </a>
+          </div>
+          
+          <div className="nav-actions">
+            <a className="btn btn-primary btn-sm btn-nav-cta" href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
+              <Icon.Tg /> Попробовать
+            </a>
+            
+            <button className="burger-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Меню">
+              <div className={`burger-icon ${menuOpen ? "open" : ""}`}>
+                <span></span><span></span>
+              </div>
+            </button>
+          </div>
         </div>
-        <a className="btn btn-primary btn-sm" href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
-          <Icon.Tg /> Попробовать
-        </a>
-      </div>
-    </nav>);
-
+      </nav>
+      <div className={`nav-backdrop ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen(false)}></div>
+    </>
+  );
 }
 
 // ============================================
@@ -446,15 +477,18 @@ function DayChat({ day }) {
 function HowItWorks() {
   const [active, setActive] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
   const sectionRef = useRef(null);
   const targetRef = useRef(0);
   const targetProgressRef = useRef(0);
 
-  // Scroll listener — only updates targets
+  // Scroll listener — only updates targets on desktop
   useEffect(() => {
     let raf = null;
     const onScroll = () => {
       if (raf) return;
+      if (window.innerWidth <= 768) return; // Disable scroll-driven logic on mobile
+      
       raf = requestAnimationFrame(() => {
         raf = null;
         const sec = sectionRef.current;
@@ -485,16 +519,49 @@ function HowItWorks() {
     let curProgress = 0;
     const tick = () => {
       if (cancelled) return;
-      curActive = curActive + (targetRef.current - curActive) * 0.12;
-      curProgress = curProgress + (targetProgressRef.current - curProgress) * 0.14;
-      const idx = Math.max(0, Math.min(DAYS.length - 1, Math.round(curActive)));
-      setActive((prev) => prev !== idx ? idx : prev);
-      setProgress(curProgress);
+      if (window.innerWidth > 768) {
+        curActive = curActive + (targetRef.current - curActive) * 0.12;
+        curProgress = curProgress + (targetProgressRef.current - curProgress) * 0.14;
+        const idx = Math.max(0, Math.min(DAYS.length - 1, Math.round(curActive)));
+        setActive((prev) => prev !== idx ? idx : prev);
+        setProgress(curProgress);
+      }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => {cancelled = true;if (raf) cancelAnimationFrame(raf);};
   }, []);
+
+  const handleSetDay = (i) => {
+    if (window.innerWidth <= 768) {
+      setActive(i);
+      setProgress(i / (DAYS.length - 1));
+    } else {
+      const sec = sectionRef.current;
+      if (!sec) return;
+      const target = sec.offsetTop + (i + 0.4) / DAYS.length * (sec.offsetHeight - window.innerHeight);
+      window.scrollTo({ top: target, behavior: "smooth" });
+    }
+  };
+
+  const onTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  
+  const onTouchEnd = (e) => {
+    if (!touchStart) return;
+    const touchEnd = e.changedTouches[0].clientX;
+    const diff = touchStart - touchEnd;
+    
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && active < DAYS.length - 1) {
+        handleSetDay(active + 1); // swipe left
+      } else if (diff < 0 && active > 0) {
+        handleSetDay(active - 1); // swipe right
+      }
+    }
+    setTouchStart(null);
+  };
 
   const day = DAYS[active];
 
@@ -523,12 +590,7 @@ function HowItWorks() {
                   role="tab"
                   aria-selected={i === active}
                   className={`prog-cell ${i <= active ? "on" : ""} ${i === active ? "active" : ""}`}
-                  onClick={() => {
-                    const sec = sectionRef.current;
-                    if (!sec) return;
-                    const target = sec.offsetTop + (i + 0.4) / DAYS.length * (sec.offsetHeight - window.innerHeight);
-                    window.scrollTo({ top: target, behavior: "smooth" });
-                  }}>
+                  onClick={() => handleSetDay(i)}>
                   
                     <span className="prog-num">{String(d.n).padStart(2, "0")}</span>
                     <span className="prog-dot"></span>
@@ -537,7 +599,7 @@ function HowItWorks() {
               </div>
             </div>
 
-            <div className="how-stage">
+            <div className="how-stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
               <div className="how-stage-info" key={active}>
                 <div className="day-big-num">{String(day.n).padStart(2, "0")}</div>
                 <div className="day-text">

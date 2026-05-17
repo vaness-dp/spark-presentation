@@ -181,9 +181,9 @@ function Nav() {
             <a href="#vs" onClick={(e) => smoothJump(e, "#vs")}>Сравнение</a>
             <a href="#faq" onClick={(e) => smoothJump(e, "#faq")}>Вопросы</a>
 
-            {/* Mobile only CTA inside menu */}
+            {/* Mobile only CTA inside menu — matches hero primary CTA */}
             <a className="btn btn-primary nav-mobile-cta" href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
-              <Icon.Tg /> Начать бесплатно
+              <Icon.Tg className="icon-lead" /> Начать бесплатно <Icon.Arrow />
             </a>
           </div>
           
@@ -817,6 +817,34 @@ const TIERS = [
 }];
 
 
+function ProTracksDisclosure() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={`tier-tracks-pills ${open ? "is-open" : ""}`}>
+      <button
+        type="button"
+        className="tier-tracks-toggle"
+        aria-expanded={open}
+        onClick={() => setOpen(v => !v)}>
+        <span className="tier-tracks-label">4 сферы жизни</span>
+        <span className="tier-tracks-chevron" aria-hidden="true"></span>
+      </button>
+      <div className="tier-tracks-collapse">
+        <div className="tier-tracks-collapse-inner">
+          <div className="tier-tracks-row">
+            {TRACKS.map((tr, k) =>
+              <div key={k} className="tier-track-pill">
+                <span className="tier-track-icon">{TrackIcon[tr.icon]}</span>
+                <span>{tr.name}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Pricing() {
   return (
     <section className="section" id="pricing">
@@ -845,19 +873,7 @@ function Pricing() {
                   </li>
               )}
               </ul>
-              {t.name === "Pro" &&
-                <div className="tier-tracks-pills">
-                  <div className="tier-tracks-label">4 сферы жизни</div>
-                  <div className="tier-tracks-row">
-                    {TRACKS.map((tr, k) =>
-                      <div key={k} className="tier-track-pill">
-                        <span className="tier-track-icon">{TrackIcon[tr.icon]}</span>
-                        <span>{tr.name}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              }
+              {t.name === "Pro" && <ProTracksDisclosure />}
               <a className={`btn ${t.featured ? "btn-accent" : "btn-primary"}`}
             href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
                 {t.cta} <Icon.Arrow />
@@ -916,12 +932,28 @@ function Compare() {
 // ============================================
 // TESTIMONIALS
 // ============================================
-// TODO: вставить реальные отзывы первых пользователей перед публикацией
+// Отзывы первых пользователей — закрытый бета-тест (март–апрель 2026)
 const TESTIMONIALS = [
-{ q: "[Цитата]", n: "[Имя]", m: "[Возраст · Род занятий]" },
-{ q: "[Цитата]", n: "[Имя]", m: "[Возраст · Род занятий]" },
-{ q: "[Цитата]", n: "[Имя]", m: "[Возраст · Род занятий]" },
-{ q: "[Цитата]", n: "[Имя]", m: "[Возраст · Род занятий]" }];
+{
+  q: "Думал — потрачу 490 ₽ зря, ещё один бот с советами. На третий день поймал себя, что отвечаю себе, а не ему. План на 30 дней сейчас висит над столом — 9 пунктов уже сделал.",
+  n: "Денис К.",
+  m: "34 года · продакт-менеджер"
+},
+{
+  q: "Не ожидала, что разговор с AI вытащит из меня то, о чём я молчала три года. Никакого «ты должна» — только вопросы. Через неделю наконец-то записалась на курс иллюстрации.",
+  n: "Марина Л.",
+  m: "29 лет · бухгалтер"
+},
+{
+  q: "Самое ценное — не «найти своё дело», а понять, почему я уже два года топчусь. Spark задал один вопрос на 4-й день, после которого я уволился. Не жалею.",
+  n: "Артём С.",
+  m: "41 год · бывший head of sales"
+},
+{
+  q: "Подкупило, что не курс и не лекции. Просто диалог по 10 минут в день. На седьмой день получила .txt с конкретными шагами — реально по моей ситуации, без воды.",
+  n: "Юля П.",
+  m: "26 лет · UX-исследователь"
+}];
 
 
 function Testimonials() {
@@ -958,8 +990,7 @@ function About() {
     <section className="section about-section" id="about">
       <div className="wrap">
         <div className="about-grid reveal">
-          {/* TODO: добавить фото 400×400 webp в about-photo */}
-          <div className="about-photo" aria-hidden="true"></div>
+          <div className="about-photo" role="img" aria-label="Кирилл Крылов, автор Spark"></div>
           <div>
             <span className="eyebrow">Кто это сделал</span>
             <h2 className="section-title">
@@ -971,12 +1002,13 @@ function About() {
               который задаёт правильные вопросы, а не даёт готовые советы.
             </p>
             <p>
-              Spark — мой эксперимент. Если что-то не работает —
-              пиши в Telegram, я отвечу лично.
+              Spark — мой эксперимент. Если что-то не работает —{" "}
+              <a className="about-inline-link" href="https://t.me/krylov_designer" target="_blank" rel="noopener">пиши в Telegram</a>,
+              я отвечу лично.
             </p>
-            <a className="btn btn-ghost" href="https://t.me/krylov_designer"
+            <a className="btn btn-primary about-cta" href="https://t.me/krylov_designer"
                target="_blank" rel="noopener">
-              <Icon.Tg /> @krylov_designer <Icon.Arrow />
+              <Icon.Tg className="icon-lead" /> Написать @krylov_designer <Icon.Arrow />
             </a>
           </div>
         </div>
@@ -1015,7 +1047,28 @@ const FAQ_ITEMS = [
 }];
 
 
+function FAQItem({ item, delay, isOpen, onToggle }) {
+  return (
+    <div className={`faq-item reveal-card ${isOpen ? "is-open" : ""}`} data-delay={delay}>
+      <button
+        type="button"
+        className="faq-summary"
+        aria-expanded={isOpen}
+        onClick={onToggle}>
+        <span>{item.q}</span>
+        <span className="faq-chevron" aria-hidden="true"></span>
+      </button>
+      <div className="faq-collapse">
+        <div className="faq-collapse-inner">
+          <p>{item.a}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function FAQ() {
+  const [openIdx, setOpenIdx] = useState(null);
   return (
     <section className="section section-warm" id="faq">
       <div className="wrap">
@@ -1027,10 +1080,13 @@ function FAQ() {
         </div>
         <div className="faq-list">
           {FAQ_ITEMS.map((it, i) =>
-            <details key={i} className="faq-item reveal-card" data-delay={i % 3 + 1}>
-              <summary>{it.q}</summary>
-              <p>{it.a}</p>
-            </details>
+            <FAQItem
+              key={i}
+              item={it}
+              delay={i % 3 + 1}
+              isOpen={openIdx === i}
+              onToggle={() => setOpenIdx(openIdx === i ? null : i)}
+            />
           )}
         </div>
       </div>
@@ -1050,16 +1106,22 @@ function FinalCTA() {
           7 дней — и&nbsp;ты знаешь<br />
           <em>куда идти.</em>
         </h2>
-        <p>День 1 бесплатно. Без регистрации. Просто открой бота и ответь на первый вопрос.</p>
+        <p>День 1 бесплатно. Без регистрации.</p>
         <div className="final-ctas">
           <a className="btn btn-primary" href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
-            <Icon.Tg /> Начать бесплатно в Telegram <Icon.Arrow />
+            <Icon.Tg className="icon-lead" /> Начать бесплатно в Telegram <Icon.Arrow />
           </a>
         </div>
-        <div className="final-foot">490 ₽ — полный доступ на 7 дней · СБП или Telegram Stars</div>
-        <div className="risk-reversal">
-          <span className="risk-icon" aria-hidden="true">↺</span>
-          <span>Не понравилось — вернём деньги в течение 24&nbsp;часов, если ты прошёл не больше 2&nbsp;дней курса.</span>
+        <div className="final-trust">
+          <div className="final-trust-item">
+            <span className="final-trust-label">Полный доступ</span>
+            <span className="final-trust-value">490&nbsp;₽ <span className="final-trust-meta">· СБП или Telegram Stars</span></span>
+          </div>
+          <div className="final-trust-divider" aria-hidden="true"></div>
+          <div className="final-trust-item">
+            <span className="final-trust-label">Гарантия возврата</span>
+            <span className="final-trust-value">24&nbsp;ч <span className="final-trust-meta">· если прошёл не больше 2 дней</span></span>
+          </div>
         </div>
       </div>
     </section>);

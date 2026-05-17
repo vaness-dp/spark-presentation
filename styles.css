@@ -2064,3 +2064,226 @@ h1.hero-title .word {
 .reveal[data-delay="5"], .reveal-card[data-delay="5"] { transition-delay: 0.38s; }
 .reveal[data-delay="6"], .reveal-card[data-delay="6"] { transition-delay: 0.46s; }
 .reveal[data-delay="7"], .reveal-card[data-delay="7"] { transition-delay: 0.54s; }
+
+/* ============== New blocks (Testimonials / About / FAQ / risk-reversal / tier-tracks) ============== */
+
+/* Risk reversal — pill под основным CTA в FinalCTA */
+.risk-reversal {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px 20px;
+  background: var(--accent-wash);
+  color: var(--accent-deep);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.45;
+  max-width: 560px;
+  text-align: left;
+  text-wrap: pretty;
+}
+.risk-icon {
+  font-size: 16px;
+  line-height: 1.2;
+  opacity: 0.72;
+  flex-shrink: 0;
+}
+@media (max-width: 560px) {
+  .risk-reversal { font-size: 13px; padding: 11px 16px; border-radius: 18px; }
+}
+
+/* Tier tracks pills — под фичами Pro-тарифа */
+.tier-tracks-pills {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+.tier-tracks-label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.tier-tracks-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tier-track-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.tier-track-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tier-track-icon svg { width: 100%; height: 100%; }
+
+/* Testimonials — 2x2 grid с blockquote */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 48px;
+}
+.quote-card {
+  margin: 0;
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.quote-card blockquote {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(17px, 1.4vw, 19px);
+  line-height: 1.5;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.quote-card figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.quote-author {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.quote-meta {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--muted);
+}
+@media (max-width: 720px) {
+  .testimonials-grid { grid-template-columns: 1fr; gap: 14px; margin-top: 32px; }
+  .quote-card { padding: 22px; }
+}
+
+/* About — фото + личный текст */
+.about-section { /* base .section */ }
+.about-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 56px;
+  align-items: center;
+}
+.about-photo {
+  width: 280px;
+  height: 280px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-deep);
+  flex-shrink: 0;
+}
+.about-grid .eyebrow { margin-bottom: 16px; }
+.about-grid .section-title { margin-bottom: 22px; }
+.about-grid p {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 14px;
+  text-wrap: pretty;
+}
+.about-grid .btn { margin-top: 16px; }
+@media (max-width: 760px) {
+  .about-grid { grid-template-columns: 1fr; gap: 28px; }
+  .about-photo { width: 200px; height: 200px; margin: 0 auto; }
+}
+
+/* FAQ — native <details> accordion */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 36px auto 0;
+  max-width: 760px;
+}
+.faq-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+  transition: border-color 200ms var(--ease);
+}
+.faq-item[open] { border-color: var(--line-strong); }
+.faq-item > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.faq-item > summary::-webkit-details-marker { display: none; }
+.faq-item > summary::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg);
+  transform-origin: center;
+  margin-top: -3px;
+  transition: transform 200ms var(--ease);
+}
+.faq-item[open] > summary::after { transform: rotate(-135deg); margin-top: 3px; }
+.faq-item > p {
+  padding: 0 22px 20px;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+@media (max-width: 560px) {
+  .faq-item > summary { padding: 16px 18px; font-size: 15px; }
+  .faq-item > p { padding: 0 18px 18px; font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq-item,
+  .faq-item > summary::after { transition: none; }
+}

@@ -179,7 +179,8 @@ function Nav() {
             <a href="#how" onClick={(e) => smoothJump(e, "#how")}>Как работает</a>
             <a href="#pricing" onClick={(e) => smoothJump(e, "#pricing")}>Цены</a>
             <a href="#vs" onClick={(e) => smoothJump(e, "#vs")}>Сравнение</a>
-            
+            <a href="#faq" onClick={(e) => smoothJump(e, "#faq")}>Вопросы</a>
+
             {/* Mobile only CTA inside menu */}
             <a className="btn btn-primary nav-mobile-cta" href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
               <Icon.Tg /> Начать бесплатно
@@ -208,11 +209,10 @@ function Nav() {
 // HERO — animated chat
 // ============================================
 const CHAT_SCRIPT = [
-{ who: "bot", text: "Когда ты в последний раз делал что-то и не смотрел на часы?", pause: 2200 },
-{ who: "me", text: "Когда занимался фотографией…", pause: 2400 },
-{ who: "bot", text: "Почему остановился? Что тогда помешало?", pause: 2000 },
-{ who: "me", text: "Казалось — несерьёзно, не заработаешь на этом", pause: 2600 },
-{ who: "bot", text: "А кто тебе это сказал — ты сам или кто-то другой?", pause: 3200 }];
+{ who: "bot", text: "Когда ты в последний раз делал что-то и не смотрел на часы?" },
+{ who: "me", text: "Когда занимался фотографией…" },
+{ who: "bot", text: "Почему остановился? Что тогда помешало?" },
+{ who: "me", text: "Казалось — несерьёзно, не заработаешь." }];
 
 
 function ChatPreview() {
@@ -365,30 +365,41 @@ function Problem() {
 const DAYS = [
 {
   n: 1,
-  t: "Кто ты сейчас",
-  d: "Точка отсчёта. Что есть, что не устраивает.",
+  t: "Где ты сейчас",
+  d: "Точка отсчёта. Что есть, что не устраивает, что привело.",
   chat: [
   { who: "bot", text: "Где ты сейчас находишься? Не на карте — в жизни." },
   { who: "me", text: "Работа норм, но топчусь на месте." },
-  { who: "bot", text: "А какой день недели обычно кажется потерянным?" },
-  { who: "me", text: "Вторник. Пять часов на встречах ни о чём." }]
+  { who: "bot", text: "Что значит «топчусь» — конкретно?" },
+  { who: "me", text: "Делаю то же, что и три года назад." }]
 
 },
 {
   n: 2,
-  t: "Ценности",
-  d: "Что важно на самом деле — без шаблонов.",
+  t: "Когда горели глаза",
+  d: "Прошлое, в котором ты был по-настоящему увлечён.",
   chat: [
-  { who: "bot", text: "Три вещи, без которых ты — не ты?" },
-  { who: "me", text: "Свобода, честность, рост." },
-  { who: "bot", text: "Когда в последний раз каждая из них была на месте?" },
-  { who: "me", text: "Свобода — давно. Месяца три как." }]
+  { who: "bot", text: "Когда ты в последний раз делал что-то и не смотрел на часы?" },
+  { who: "me", text: "Когда занимался фотографией…" },
+  { who: "bot", text: "Почему остановился? Что тогда помешало?" },
+  { who: "me", text: "Казалось — несерьёзно, не заработаешь." }]
 
 },
 {
   n: 3,
-  t: "Сильные стороны",
-  d: "Что даётся легко и что недооцениваешь.",
+  t: "Что даёт энергию",
+  d: "Паттерны: что заряжает, а что выжимает.",
+  chat: [
+  { who: "bot", text: "Что в твоей неделе заряжает, а что выжимает?" },
+  { who: "me", text: "Зум-встречи выжимают. Разговоры один на один — заряжают." },
+  { who: "bot", text: "А что в этих двух случаях общего?" },
+  { who: "me", text: "В первом я слушаю формальности. Во втором — человека." }]
+
+},
+{
+  n: 4,
+  t: "Твои таланты",
+  d: "Маленькие победы и сильные стороны, которые ты не замечаешь.",
   chat: [
   { who: "bot", text: "К тебе приходят за советом — за каким?" },
   { who: "me", text: "Когда надо разобраться в хаосе." },
@@ -397,9 +408,9 @@ const DAYS = [
 
 },
 {
-  n: 4,
-  t: "Страхи и блоки",
-  d: "Что мешает двигаться и откуда это.",
+  n: 5,
+  t: "Что мешает двигаться",
+  d: "Страхи и ограничения — собственные и чужие.",
   chat: [
   { who: "bot", text: "Что ты НЕ делаешь, хотя хочется?" },
   { who: "me", text: "Не пишу. Стыдно." },
@@ -408,25 +419,14 @@ const DAYS = [
 
 },
 {
-  n: 5,
-  t: "Желания",
-  d: "Чего хочется по-настоящему.",
-  chat: [
-  { who: "bot", text: "Если бы никто не узнал — чем бы занялся?" },
-  { who: "me", text: "Делал бы короткие видео." },
-  { who: "bot", text: "О чём?" },
-  { who: "me", text: "О том, как находить смысл там, где его не ждёшь." }]
-
-},
-{
   n: 6,
-  t: "Ресурсы",
-  d: "Время, навыки, связи, возможности.",
+  t: "Синтез",
+  d: "Что начинает вырисовываться из шести дней разговора.",
   chat: [
-  { who: "bot", text: "Назови трёх людей, которые скажут «давай», если позвонишь сегодня." },
-  { who: "me", text: "Аня. Серёжа. Брат." },
-  { who: "bot", text: "С кем заговоришь первым? Что скажешь?" },
-  { who: "me", text: "Серёже. Что хочу попробовать." }]
+  { who: "bot", text: "Я собрал всё, что ты рассказал за пять дней. Слышу одно слово." },
+  { who: "me", text: "Какое?" },
+  { who: "bot", text: "«Свобода в формате». Где это уже есть в твоей жизни?" },
+  { who: "me", text: "В фотографии. И в разговорах один на один." }]
 
 },
 {
@@ -436,7 +436,7 @@ const DAYS = [
   chat: [
   { who: "bot", text: "Собираю всё, что ты рассказал за 6 дней…" },
   { who: "bot", text: "Твоё дело: видео о смысле и саморазвитии." },
-  { who: "bot", text: "Первый шаг — 1 короткое видео в неделю. 30 дней. Без редактуры." },
+  { who: "bot", text: "Первый шаг — одно короткое видео в неделю. 30 дней. Без редактуры." },
   { who: "sys", text: "📄 plan_30days.txt · готов к скачиванию" }]
 
 }];
@@ -611,7 +611,7 @@ function HowItWorks() {
                       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
                       <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
                     </svg>
-                    5-10 минут · 6 вопросов
+                    10 минут · 6 вопросов
                   </div>
                 </div>
               </div>
@@ -700,7 +700,7 @@ const FEATURES = [
 { icon: FeatureIcons.ru, h: "На русском языке", p: "Все диалоги, промпты и итоговый план — на русском. Нюансы, которые теряются в переводе, здесь сохранены." },
 { icon: FeatureIcons.structure, h: "Структура, а не хаос", p: "Семь чётких тем, каждая строится на предыдущей. Есть начало и есть конец — ты знаешь куда идёшь." },
 { icon: FeatureIcons.file, h: "Результат в руках", p: "В конце ты получаешь файл, а не просто «ощущение разговора». Конкретный план, который можно перечитать." },
-{ icon: FeatureIcons.clock, h: "10–15 минут в день", p: "Не надо выделять час. Одна сессия в удобное время — утром в транспорте или вечером перед сном." },
+{ icon: FeatureIcons.clock, h: "10 минут в день", p: "Одна сессия — 6 вопросов. Утром в транспорте или вечером перед сном, без необходимости выделять час." },
 { icon: FeatureIcons.gift, h: "Первый шаг — бесплатно", p: "День 1 всегда бесплатно. Почувствуй ценность до того, как тратить деньги. Никакого риска, никакой карты." },
 { icon: FeatureIcons.telegram, h: "Прямо в Telegram", p: "Никакой регистрации, приложений и паролей. Просто пишешь как другу — в любое время, в любом месте." }];
 
@@ -734,9 +734,9 @@ function Features() {
 // ============================================
 const TRACKS = [
 { name: "Найти своё дело", note: "основной трек", icon: "compass" },
-{ name: "Деньги и карьера", note: "доход и рост", icon: "growth" },
-{ name: "Отношения", note: "партнёрство и близость", icon: "hearts" },
-{ name: "Здоровье", note: "энергия и режим", icon: "pulse" }];
+{ name: "Деньги и финансовое мышление", note: "доход и мышление", icon: "growth" },
+{ name: "Отношения и близость", note: "партнёрство и близость", icon: "hearts" },
+{ name: "Здоровье и энергия", note: "энергия и режим", icon: "pulse" }];
 
 
 const TrackIcon = {
@@ -776,6 +776,7 @@ const TIERS = [
   { on: true, t: "Диалог с AI-коучем" },
   { on: false, t: "Дни 2–7 и финальный план" },
   { on: false, t: "Скачать план в .txt" },
+  { on: false, t: "До 3 доп. сессий по 199 ₽" },
   { on: false, t: "Голосовые сообщения" },
   { on: false, t: "Все 4 трека и безлимит" },
   { on: false, t: "План на 90 дней · check-in" }]
@@ -793,6 +794,7 @@ const TIERS = [
   { on: true, t: "Диалог с AI-коучем" },
   { on: true, t: "Финальный план на 30 дней" },
   { on: true, t: "Скачать план в .txt" },
+  { on: true, t: "До 3 доп. сессий по 199 ₽" },
   { on: false, t: "Голосовые сообщения" },
   { on: false, t: "Все 4 трека и безлимит" },
   { on: false, t: "План на 90 дней · check-in" }]
@@ -808,15 +810,16 @@ const TIERS = [
   { on: true, t: "Диалог с AI-коучем" },
   { on: true, t: "Финальный план на 90 дней" },
   { on: true, t: "Скачать план в .txt" },
-  { on: true, t: "Голосовые + все 4 трека", tooltip: true },
+  { on: true, t: "Голосовые сообщения" },
   { on: true, t: "Безлимитные повторные прохождения" },
-  { on: true, t: "Еженедельный check-in" }]
+  { on: true, t: "Еженедельный check-in" },
+  { on: true, t: "Приоритетная поддержка" }]
 }];
 
 
 function Pricing() {
   return (
-    <section className="section section-warm" id="pricing">
+    <section className="section" id="pricing">
       <div className="wrap">
         <div className="section-head reveal">
           <span className="eyebrow">Цены</span>
@@ -838,29 +841,23 @@ function Pricing() {
                 {t.features.map((f, j) =>
               <li key={j} className={f.on ? "" : "off"}>
                     {f.on ? <Icon.Check className="check" /> : <Icon.X className="x" />}
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", flex: 1 }}>
-                      <span>{f.t}</span>
-                      {f.tooltip &&
-                        <div className="tooltip-wrap">
-                          <span className="tooltip-trigger">
-                            Что за треки? <Icon.Arrow style={{ width: 10, height: 10, transform: "rotate(-90deg)" }} />
-                          </span>
-                          <div className="tooltip-content">
-                            <ul className="tooltip-list">
-                              {TRACKS.map((tr, k) =>
-                                <li key={k}>
-                                  <span className="tooltip-dot"></span>
-                                  <span><strong>{tr.name}</strong> — {tr.note}</span>
-                                </li>
-                              )}
-                            </ul>
-                          </div>
-                        </div>
-                      }
-                    </div>
+                    <span>{f.t}</span>
                   </li>
               )}
               </ul>
+              {t.name === "Pro" &&
+                <div className="tier-tracks-pills">
+                  <div className="tier-tracks-label">4 сферы жизни</div>
+                  <div className="tier-tracks-row">
+                    {TRACKS.map((tr, k) =>
+                      <div key={k} className="tier-track-pill">
+                        <span className="tier-track-icon">{TrackIcon[tr.icon]}</span>
+                        <span>{tr.name}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              }
               <a className={`btn ${t.featured ? "btn-accent" : "btn-primary"}`}
             href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
                 {t.cta} <Icon.Arrow />
@@ -887,7 +884,7 @@ const COMPARE_ROWS = [
 
 function Compare() {
   return (
-    <section className="section" id="vs">
+    <section className="section section-warm" id="vs">
       <div className="wrap">
         <div className="section-head reveal">
           <span className="eyebrow">Сравнение</span>
@@ -917,6 +914,131 @@ function Compare() {
 }
 
 // ============================================
+// TESTIMONIALS
+// ============================================
+// TODO: вставить реальные отзывы первых пользователей перед публикацией
+const TESTIMONIALS = [
+{ q: "[Цитата]", n: "[Имя]", m: "[Возраст · Род занятий]" },
+{ q: "[Цитата]", n: "[Имя]", m: "[Возраст · Род занятий]" },
+{ q: "[Цитата]", n: "[Имя]", m: "[Возраст · Род занятий]" },
+{ q: "[Цитата]", n: "[Имя]", m: "[Возраст · Род занятий]" }];
+
+
+function Testimonials() {
+  return (
+    <section className="section section-warm" id="testimonials">
+      <div className="wrap">
+        <div className="section-head reveal">
+          <span className="eyebrow">Отзывы</span>
+          <h2 className="section-title">
+            Первые читатели — <em>первые отклики.</em>
+          </h2>
+        </div>
+        <div className="testimonials-grid">
+          {TESTIMONIALS.map((t, i) =>
+            <figure key={i} className="quote-card reveal-card" data-delay={i % 2 + 1}>
+              <blockquote>«{t.q}»</blockquote>
+              <figcaption>
+                <span className="quote-author">{t.n}</span>
+                <span className="quote-meta">{t.m}</span>
+              </figcaption>
+            </figure>
+          )}
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ============================================
+// ABOUT
+// ============================================
+function About() {
+  return (
+    <section className="section about-section" id="about">
+      <div className="wrap">
+        <div className="about-grid reveal">
+          {/* TODO: добавить фото 400×400 webp в about-photo */}
+          <div className="about-photo" aria-hidden="true"></div>
+          <div>
+            <span className="eyebrow">Кто это сделал</span>
+            <h2 className="section-title">
+              Один человек.&nbsp;<em>Не команда.</em>
+            </h2>
+            <p>
+              Меня зовут Кирилл, я дизайнер. Сам прошёл через
+              «не знаю чем хочу заниматься» — и сделал инструмент,
+              который задаёт правильные вопросы, а не даёт готовые советы.
+            </p>
+            <p>
+              Spark — мой эксперимент. Если что-то не работает —
+              пиши в Telegram, я отвечу лично.
+            </p>
+            <a className="btn btn-ghost" href="https://t.me/krylov_designer"
+               target="_blank" rel="noopener">
+              <Icon.Tg /> @krylov_designer <Icon.Arrow />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ============================================
+// FAQ
+// ============================================
+const FAQ_ITEMS = [
+{
+  q: "Это не психолог?",
+  a: "Нет. Spark — инструмент самоанализа: задаёт вопросы, не ставит диагнозов и не лечит. Если нужна помощь специалиста — иди к специалисту."
+},
+{
+  q: "Чем это отличается от ChatGPT?",
+  a: "ChatGPT даёт советы. Spark задаёт вопросы — и только их. Семь дней структурированного диалога, где ты сам приходишь к ответам. На выходе — файл с твоим планом, а не сохранённый чат."
+},
+{
+  q: "Что с моими данными?",
+  a: "Сообщения хранятся на серверах Railway, чтобы поддерживать диалог. Мы не передаём их третьим лицам и не используем для рекламы. Удалить всё можно командой /reset или запросом в поддержку."
+},
+{
+  q: "А если не понравится?",
+  a: "Вернём деньги в течение 24 часов после оплаты, если ты прошёл не больше двух дней курса. Пиши в поддержку @krylov_designer."
+},
+{
+  q: "Это работает на телефоне?",
+  a: "Полностью. Spark живёт прямо в Telegram. Никакого приложения, никакой регистрации — открыл бота и пишешь."
+},
+{
+  q: "Нужно отвечать каждый день подряд?",
+  a: "Нет. Возвращайся когда удобно. День завершается, когда ты прошёл все шесть вопросов — не по календарю."
+}];
+
+
+function FAQ() {
+  return (
+    <section className="section section-warm" id="faq">
+      <div className="wrap">
+        <div className="section-head reveal">
+          <span className="eyebrow">Вопросы</span>
+          <h2 className="section-title">
+            Часто&nbsp;<em>спрашивают.</em>
+          </h2>
+        </div>
+        <div className="faq-list">
+          {FAQ_ITEMS.map((it, i) =>
+            <details key={i} className="faq-item reveal-card" data-delay={i % 3 + 1}>
+              <summary>{it.q}</summary>
+              <p>{it.a}</p>
+            </details>
+          )}
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ============================================
 // FINAL CTA
 // ============================================
 function FinalCTA() {
@@ -935,6 +1057,10 @@ function FinalCTA() {
           </a>
         </div>
         <div className="final-foot">490 ₽ — полный доступ на 7 дней · СБП или Telegram Stars</div>
+        <div className="risk-reversal">
+          <span className="risk-icon" aria-hidden="true">↺</span>
+          <span>Не понравилось — вернём деньги в течение 24&nbsp;часов, если ты прошёл не больше 2&nbsp;дней курса.</span>
+        </div>
       </div>
     </section>);
 
@@ -962,6 +1088,7 @@ function Footer({ onOpenModal }) {
               <a href="#pricing">Цены</a>
               <a href="#vs">Сравнение</a>
               <a href="#features">Почему Spark</a>
+              <a href="#faq">Вопросы</a>
             </div>
           </div>
           <div>
@@ -986,4 +1113,4 @@ function Footer({ onOpenModal }) {
 }
 
 // expose
-Object.assign(window, { Nav, Hero, Problem, HowItWorks, Features, Pricing, Compare, FinalCTA, Footer, Modal, PrivacyContent, TermsContent, DAYS, CHAT_SCRIPT, DayChat, ChatPreview, SparkMark, Icon, FeatureIcons });
+Object.assign(window, { Nav, Hero, Problem, HowItWorks, Features, Testimonials, Pricing, Compare, About, FAQ, FinalCTA, Footer, Modal, PrivacyContent, TermsContent, DAYS, CHAT_SCRIPT, DayChat, ChatPreview, SparkMark, Icon, FeatureIcons });

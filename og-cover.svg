@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#faf9f5"/>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#warmTint)" opacity="0.45"/>
+  <defs>
+    <radialGradient id="warmTint" cx="20%" cy="15%" r="80%">
+      <stop offset="0%" stop-color="#f4ddd0" stop-opacity="0.85"/>
+      <stop offset="60%" stop-color="#faf9f5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Brand mark — 4-point spark, top-left -->
+  <g transform="translate(72, 78)" fill="#c96442">
+    <path d="M 28 0 L 33 23 L 56 28 L 33 33 L 28 56 L 23 33 L 0 28 L 23 23 Z"/>
+  </g>
+  <text x="146" y="120" font-family="DM Sans, system-ui, sans-serif" font-weight="600" font-size="28" fill="#1f1e1d">Spark</text>
+
+  <!-- Headline -->
+  <text x="72" y="320" font-family="Instrument Serif, Georgia, serif" font-size="124" fill="#1f1e1d">
+    <tspan>Найди </tspan><tspan font-style="italic" fill="#c96442">своё дело</tspan>
+  </text>
+  <text x="72" y="440" font-family="Instrument Serif, Georgia, serif" font-size="124" fill="#1f1e1d">за 7 дней.</text>
+
+  <!-- Subline -->
+  <text x="72" y="528" font-family="DM Sans, system-ui, sans-serif" font-weight="400" font-size="26" fill="#6b6760">
+    AI-коуч в Telegram · День 1 бесплатно
+  </text>
+
+  <!-- CTA pill, bottom-right -->
+  <g transform="translate(820, 490)">
+    <rect width="308" height="64" rx="32" fill="#1f1e1d"/>
+    <text x="154" y="42" font-family="DM Sans, system-ui, sans-serif" font-weight="600" font-size="20" fill="#faf9f5" text-anchor="middle">
+      @spark_find_bot →
+    </text>
+  </g>
+
+  <!-- Decorative blob, bottom-left -->
+  <circle cx="120" cy="620" r="200" fill="#f4ddd0" opacity="0.5"/>
+</svg>

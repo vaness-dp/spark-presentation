@@ -588,7 +588,6 @@ h1.hero-title .word {
   flex-direction: column;
   /* Use margin-top auto on first child instead of justify-content: flex-end to prevent scroll jumping bugs */
   gap: 10px;
-  height: 400px;
   overflow-y: auto; /* Allow proper native scrolling */
   position: relative;
   padding-bottom: 4px;

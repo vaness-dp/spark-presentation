@@ -591,7 +591,6 @@ h1.hero-title .word {
   height: 400px;
   overflow-y: hidden;
   position: relative;
-  scroll-behavior: smooth;
   padding-bottom: 4px;
 }
 
@@ -602,7 +601,7 @@ h1.hero-title .word {
 
 /* One-time bubble entry for hero (async chat) */
 .bubble-once {
-  animation: bubble-in 0.6s cubic-bezier(0.2, 1.2, 0.3, 1) forwards;
+  animation: bubble-in 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 @keyframes bubble-cycle {
@@ -616,8 +615,8 @@ h1.hero-title .word {
   font-size: 14.5px;
   line-height: 1.45;
   opacity: 0;
-  transform: translateY(20px) scale(0.9);
-  animation: bubble-in 0.6s cubic-bezier(0.2, 1.2, 0.3, 1) forwards;
+  transform: translateY(16px);
+  animation: bubble-in 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   will-change: transform, opacity;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 }
@@ -625,11 +624,11 @@ h1.hero-title .word {
 @keyframes bubble-in {
   0% {
     opacity: 0;
-    transform: translateY(20px) scale(0.9);
+    transform: translateY(16px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 

@@ -214,7 +214,12 @@ function ChatPreview() {
   }, []);
 
   useEffect(() => {
-    if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+    if (bodyRef.current) {
+      bodyRef.current.scrollTo({
+        top: bodyRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [shown, typing]);
 
   return (

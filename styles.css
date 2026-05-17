@@ -592,6 +592,11 @@ h1.hero-title .word {
   overflow-y: auto; /* Allow proper native scrolling */
   position: relative;
   padding-bottom: 4px;
+  scrollbar-width: none; /* Firefox */
+}
+
+.chat-body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 .chat-body > :first-child {

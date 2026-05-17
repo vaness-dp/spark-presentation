@@ -185,43 +185,6 @@ const CHAT_SCRIPT = [
 
 
 function ChatPreview() {
-  const [shown, setShown] = useState([]);
-  const [typing, setTyping] = useState(false);
-  const bodyRef = useRef(null);
-
-  useEffect(() => {
-    let cancel = false;
-    let timers = [];
-    async function run() {
-      while (!cancel) {
-        setShown([]);
-        for (let i = 0; i < CHAT_SCRIPT.length; i++) {
-          if (cancel) return;
-          const msg = CHAT_SCRIPT[i];
-          if (msg.who === "bot") {
-            setTyping(true);
-            await new Promise((r) => timers.push(setTimeout(r, 900)));
-            setTyping(false);
-          }
-          setShown((s) => [...s, msg]);
-          await new Promise((r) => timers.push(setTimeout(r, msg.pause || 1800)));
-        }
-        await new Promise((r) => timers.push(setTimeout(r, 2200)));
-      }
-    }
-    run();
-    return () => {cancel = true;timers.forEach(clearTimeout);};
-  }, []);
-
-  useEffect(() => {
-    if (bodyRef.current) {
-      bodyRef.current.scrollTo({
-        top: bodyRef.current.scrollHeight,
-        behavior: 'smooth'
-      });
-    }
-  }, [shown, typing]);
-
   return (
     <div className="chat-card">
       <div className="chat-head">
@@ -238,20 +201,25 @@ function ChatPreview() {
           <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--muted-soft)" }}></span>
         </div>
       </div>
-      <div className="chat-body" ref={bodyRef}>
-        {shown.map((m, i) =>
-        <div key={i} className={`bubble bubble-once ${m.who === "bot" ? "bubble-bot" : "bubble-me"}`}>
+      <div className="chat-body">
+        {CHAT_SCRIPT.map((m, i) =>
+          <div 
+            key={i} 
+            className={`bubble bubble-once ${m.who === "bot" ? "bubble-bot" : "bubble-me"}`} 
+            style={{ animationDelay: `${i * 0.15}s` }}
+          >
             {m.text}
           </div>
         )}
-        {typing &&
-        <div className="bubble bubble-bot typing bubble-once">
-            <span></span><span></span><span></span>
-          </div>
-        }
+        <div 
+          className="bubble bubble-bot typing bubble-once" 
+          style={{ animationDelay: `${CHAT_SCRIPT.length * 0.15}s` }}
+        >
+          <span></span><span></span><span></span>
+        </div>
       </div>
-    </div>);
-
+    </div>
+  );
 }
 
 function Hero() {

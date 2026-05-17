@@ -745,8 +745,10 @@ const TIERS = [
   { on: true, t: "День 1 в полном объёме" },
   { on: true, t: "Диалог с AI-коучем" },
   { on: false, t: "Дни 2–7 и финальный план" },
-  { on: false, t: "Скачать план в .txt" }]
-
+  { on: false, t: "Скачать план в .txt" },
+  { on: false, t: "Голосовые сообщения" },
+  { on: false, t: "Все 4 трека и безлимит" },
+  { on: false, t: "План на 90 дней · check-in" }]
 },
 {
   name: "Базовый",
@@ -756,10 +758,12 @@ const TIERS = [
   cta: "Купить доступ",
   features: [
   { on: true, t: "Все 7 дней без ограничений" },
+  { on: true, t: "Диалог с AI-коучем" },
   { on: true, t: "Финальный план на 30 дней" },
   { on: true, t: "Скачать план в .txt" },
-  { on: false, t: "Голосовые + все 4 трека" }]
-
+  { on: false, t: "Голосовые сообщения" },
+  { on: false, t: "Все 4 трека и безлимит" },
+  { on: false, t: "План на 90 дней · check-in" }]
 },
 {
   name: "Pro",
@@ -770,11 +774,13 @@ const TIERS = [
   featured: true,
   tag: "Популярный",
   features: [
+  { on: true, t: "Все 7 дней без ограничений" },
+  { on: true, t: "Диалог с AI-коучем" },
   { on: true, t: "Финальный план на 90 дней" },
-  { on: true, t: "Голосовые сообщения" },
-  { on: true, t: "Безлимитные циклы · check-in" }],
-
-  tracks: TRACKS
+  { on: true, t: "Скачать план в .txt" },
+  { on: true, t: "Голосовые + все 4 трека", tooltip: true },
+  { on: true, t: "Безлимитные повторные прохождения" },
+  { on: true, t: "Еженедельный check-in" }]
 }];
 
 
@@ -802,28 +808,29 @@ function Pricing() {
                 {t.features.map((f, j) =>
               <li key={j} className={f.on ? "" : "off"}>
                     {f.on ? <Icon.Check className="check" /> : <Icon.X className="x" />}
-                    <span>{f.t}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", flex: 1 }}>
+                      <span>{f.t}</span>
+                      {f.tooltip &&
+                        <div className="tooltip-wrap">
+                          <span className="tooltip-trigger">
+                            Что за треки? <Icon.Arrow style={{ width: 10, height: 10, transform: "rotate(-90deg)" }} />
+                          </span>
+                          <div className="tooltip-content">
+                            <ul className="tooltip-list">
+                              {TRACKS.map((tr, k) =>
+                                <li key={k}>
+                                  <span className="tooltip-dot"></span>
+                                  <span><strong>{tr.name}</strong> — {tr.note}</span>
+                                </li>
+                              )}
+                            </ul>
+                          </div>
+                        </div>
+                      }
+                    </div>
                   </li>
               )}
               </ul>
-              {t.tracks &&
-            <div className="tracks-block">
-                  <div className="tracks-head">
-                    <span className="tracks-eyebrow">4 трека внутри</span>
-                  </div>
-                  <div className="tracks-list">
-                    {t.tracks.map((tr, k) =>
-                <div key={k} className="track-row">
-                        <div className="track-icon">{TrackIcon[tr.icon]}</div>
-                        <div className="track-text">
-                          <div className="track-name">{tr.name}</div>
-                          <div className="track-note">{tr.note}</div>
-                        </div>
-                      </div>
-                )}
-                  </div>
-                </div>
-            }
               <a className={`btn ${t.featured ? "btn-accent" : "btn-primary"}`}
             href="https://t.me/spark_find_bot" target="_blank" rel="noopener">
                 {t.cta} <Icon.Arrow />

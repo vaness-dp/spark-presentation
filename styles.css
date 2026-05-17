@@ -1277,26 +1277,27 @@ h1.hero-title .word {
 }
 
 .tier-featured {
-  background: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-  transform: scale(1.03);
+  background: var(--surface); /* Keep it same as other cards */
+  color: var(--ink);
+  border-color: rgba(201, 100, 66, 0.6);
+  box-shadow: 0 0 32px -4px rgba(201, 100, 66, 0.15), inset 0 0 0 1px rgba(201, 100, 66, 0.2);
   z-index: 1;
 }
 
 .tier-featured:hover {
-  transform: scale(1.03) translateY(-3px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px -4px rgba(201, 100, 66, 0.2), inset 0 0 0 1px rgba(201, 100, 66, 0.3);
 }
 
+/* Remove overrides that were meant for dark inverted cards */
 .tier-featured h3,
 .tier-featured .price-num {
-  color: var(--bg);
+  color: var(--ink);
 }
 
 .tier-featured .tier-desc,
 .tier-featured .price-suffix {
-  color: rgba(250, 249, 245, 0.7);
+  color: var(--muted);
 }
 
 .tier-tag {

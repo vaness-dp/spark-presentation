@@ -756,6 +756,8 @@ const TIERS = [
   suffix: "₽",
   desc: "Полный курс — все 7 дней",
   cta: "Купить доступ",
+  featured: true,
+  tag: "Популярный",
   features: [
   { on: true, t: "Все 7 дней без ограничений" },
   { on: true, t: "Диалог с AI-коучем" },
@@ -771,8 +773,6 @@ const TIERS = [
   suffix: "₽",
   desc: "Всё включено — без ограничений",
   cta: "Выбрать Pro",
-  featured: true,
-  tag: "Популярный",
   features: [
   { on: true, t: "Все 7 дней без ограничений" },
   { on: true, t: "Диалог с AI-коучем" },
